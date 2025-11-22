@@ -1,0 +1,46 @@
+pipeline {
+    agent any
+
+    stages {
+
+        stage('Start') {
+            steps {
+                echo "Pipeline Started"
+                echo "Current Branch: ${env.BRANCH_NAME}"
+            }
+        }
+
+        stage('Build') {
+            steps {
+                echo "Building..."
+            }
+        }
+
+        stage('Tests (Only on master)') {
+            when {
+                branch 'master'            // RUN ONLY ON master
+            }
+            parallel {
+                stage('Unit Test') {
+                    steps {
+                        echo "Running Unit Tests..."
+                        sh 'sleep 3'
+                    }
+                }
+
+                stage('Integration Test') {
+                    steps {
+                        echo "Running Integration Tests..."
+                        sh 'sleep 3'
+                    }
+                }
+            }
+        }
+
+        stage('End') {
+            steps {
+                echo "Pipeline Finished"
+            }
+        }
+    }
+}
