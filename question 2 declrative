@@ -1,0 +1,38 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Build') {
+            steps {
+                echo "Build stage - branch: ${env.BRANCH_NAME}"
+                // e.g. sh 'mvn -B -DskipTests package'
+            }
+        }
+
+        stage('Tests') {
+            when {
+                branch 'master'   // only run this stage on master
+            }
+            parallel {
+                stage('Unit Test') {
+                    steps {
+                        echo "Running Unit Tests on master"
+                        // e.g. sh 'mvn test -Dtest=unit'
+                    }
+                }
+                stage('Integration Test') {
+                    steps {
+                        echo "Running Integration Tests on master"
+                        // e.g. sh 'mvn verify -Dtest=integration'
+                    }
+                }
+            }
+        }
+
+        stage('End') {
+            steps {
+                echo "Pipeline Completed"
+            }
+        }
+    }
+}
