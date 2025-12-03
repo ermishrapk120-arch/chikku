@@ -6,7 +6,7 @@ node {
     }
 
     stage('Build') {
-        echo "Running build.."
+        echo "Running build..."
     }
 
     // Run 2 test stages in parallel only if branch = master
