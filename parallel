@@ -1,0 +1,41 @@
+node {
+    stage('Checkout') {
+        checkout scm
+        BRANCH = env.GIT_BRANCH ?: sh(script: "git rev-parse --abbrev-ref HEAD", returnStdout: true).trim()
+        echo "Building on branch: ${BRANCH}"
+    }
+
+    stage('Build') {
+        echo "Running build..."
+    }
+
+    // Run 2 test stages in parallel only if branch = master
+    if (BRANCH == 'master' || BRANCH == 'origin/master') {
+
+        stage('Tests') {
+            parallel(
+                "Unit Test": {
+                    stage('Unit Test') {
+                        echo "Running Unit Tests..."
+                        // add unit test commands here
+                    }
+                },
+                "Integration Test": {
+                    stage('Integration Test') {
+                        echo "Running Integration Tests..."
+                        // add integration test commands here
+                    }
+                }
+            )
+        }
+
+    } else {
+        stage("Skip Tests") {
+            echo "Skipping tests because branch is not master"
+        }
+    }
+
+    stage('End') {
+        echo "Pipeline Completed"
+    }
+}
